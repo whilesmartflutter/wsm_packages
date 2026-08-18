@@ -9,3 +9,4 @@ workspace:
   - packages/wsm_network
   - packages/wsm_crash
   - packages/wsm_crash_firebase
+  - packages/wsm_secure_storage

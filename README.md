@@ -13,13 +13,33 @@ keep descriptive unprefixed names.
 | Package | Contents |
 |---|---|
 | [`wsm_core`](packages/wsm_core) | `Failure` model, `ApiException` hierarchy, `ErrorHandler` / `RepositoryErrorHandler`, use-case base classes, `AsyncState<T>` / `MutationState`, logger factory. Pure Dart. |
-| [`wsm_network`](packages/wsm_network) | `createDio` factory with sane timeouts, `TokenInterceptor`, redacting `NetworkLoggerInterceptor`, `LocaleInterceptor`, `RemoveNullValuesInterceptor`, `TokenStorage`. |
+| [`wsm_network`](packages/wsm_network) | `createDio` factory with sane timeouts, `TokenInterceptor`, redacting `NetworkLoggerInterceptor`, `LocaleInterceptor`, `RemoveNullValuesInterceptor`, and the `TokenStorage` interface. No plugin dependencies. |
+| [`wsm_secure_storage`](packages/wsm_secure_storage) | `SecureTokenStorage` — the keychain/keystore implementation of `TokenStorage`. |
 | [`wsm_crash_firebase`](packages/wsm_crash_firebase) | `FirebaseCrashReporter` — the Crashlytics implementation of `wsm_crash`'s interface, split out so apps without a Firebase project skip the pods. |
 | [`wsm_crash`](packages/wsm_crash) | `CrashReportingInterface`/`CrashReportingService`, Firebase Crashlytics and local-logging implementations, `CrashReportingInterceptor`, `AppBlocObserver`, `runGuardedApp` bootstrap helper. |
 
-Packages are intentionally independent siblings, mirroring the drift_sync repo
-layout. The one dependency between them is `wsm_crash_firebase` → `wsm_crash`,
-which an implementation package necessarily has on its interface. Wire them together in the app's
+## Layering rule
+
+**`wsm_x` holds interfaces and pure-Dart logic and depends on no plugins.
+`wsm_x_<vendor>` / `wsm_<impl>` holds the plugin-backed implementation.**
+
+Plugin dependencies (native code, Gradle plugins, pods, platform floors) are
+the ones that cause irreducible version conflicts between apps. Keeping them
+out of the interface packages means adopting shared code never forces a native
+version decision on an app — `wsm_crash` works without Firebase, `wsm_network`
+works without a secure-storage plugin, and each app opts into the
+implementation it wants:
+
+| Interface package | Implementation package |
+|---|---|
+| `wsm_crash` (`CrashReportingInterface`, `LoggingCrashReporter`) | `wsm_crash_firebase` (Crashlytics) |
+| `wsm_network` (`TokenStorage`) | `wsm_secure_storage` (keychain/keystore) |
+
+Implementation packages depend on their interface package, which is the only
+dependency between siblings. **That cross-dependency requires a
+`dependency_overrides` entry in the consuming app** — pub treats the app's git
+source and the package's hosted constraint as incompatible sources otherwise.
+Each implementation package's README shows the exact block. Wire them together in the app's
 composition root — see each package README.
 
 ## Consuming a package
@@ -70,6 +90,7 @@ flutter analyze
 (cd packages/wsm_network && flutter test)
 (cd packages/wsm_crash && flutter test)
 (cd packages/wsm_crash_firebase && flutter test)
+(cd packages/wsm_secure_storage && flutter test)
 ```
 
 ## Releasing

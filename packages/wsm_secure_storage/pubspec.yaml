@@ -1,6 +1,6 @@
-name: wsm_network
-description: WhileSmart mobile shared networking — Dio factory with sane timeouts and the standard interceptor set. No plugin dependencies.
-version: 0.2.0
+name: wsm_secure_storage
+description: Keychain/keystore-backed implementation of wsm_network's TokenStorage interface.
+version: 0.1.0
 homepage: https://github.com/whilesmartflutter/wsm_packages
 repository: https://github.com/whilesmartflutter/wsm_packages
 issue_tracker: https://github.com/whilesmartflutter/wsm_packages/issues
@@ -13,11 +13,12 @@ environment:
   flutter: ">=3.16.0"
 
 dependencies:
-  dio: ^5.8.0
   flutter:
     sdk: flutter
-  logger: ^2.5.0
-  meta: ^1.15.0
+  # Widened so apps on either major can adopt this without a storage
+  # migration that could invalidate stored tokens.
+  flutter_secure_storage: ">=9.0.0 <11.0.0"
+  wsm_network: ^0.2.0
 
 dev_dependencies:
   flutter_test:

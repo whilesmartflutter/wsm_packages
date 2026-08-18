@@ -42,3 +42,7 @@ jobs:
       - name: Test wsm_crash_firebase
         working-directory: packages/wsm_crash_firebase
         run: flutter test
+
+      - name: Test wsm_secure_storage
+        working-directory: packages/wsm_secure_storage
+        run: flutter test
