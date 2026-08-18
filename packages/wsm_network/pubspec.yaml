@@ -1,6 +1,6 @@
 name: wsm_network
 description: WhileSmart mobile shared networking — Dio factory with sane timeouts, token/locale/logging interceptors, and secure token storage.
-version: 0.1.0
+version: 0.1.1
 homepage: https://github.com/whilesmartflutter/wsm_packages
 repository: https://github.com/whilesmartflutter/wsm_packages
 issue_tracker: https://github.com/whilesmartflutter/wsm_packages/issues
@@ -16,7 +16,11 @@ dependencies:
   dio: ^5.8.0
   flutter:
     sdk: flutter
-  flutter_secure_storage: ^10.0.0
+  # Widened for apps still on 9.x (mobile-pay). This package only uses
+  # read/write/delete and IOSOptions.accessibility, identical in both majors.
+  # Bumping an app from 9 to 10 risks existing tokens becoming unreadable, so
+  # that migration must be a deliberate per-app decision.
+  flutter_secure_storage: ">=9.0.0 <11.0.0"
   logger: ^2.5.0
   meta: ^1.15.0
 
