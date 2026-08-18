@@ -14,10 +14,12 @@ keep descriptive unprefixed names.
 |---|---|
 | [`wsm_core`](packages/wsm_core) | `Failure` model, `ApiException` hierarchy, `ErrorHandler` / `RepositoryErrorHandler`, use-case base classes, `AsyncState<T>` / `MutationState`, logger factory. Pure Dart. |
 | [`wsm_network`](packages/wsm_network) | `createDio` factory with sane timeouts, `TokenInterceptor`, redacting `NetworkLoggerInterceptor`, `LocaleInterceptor`, `RemoveNullValuesInterceptor`, `TokenStorage`. |
+| [`wsm_crash_firebase`](packages/wsm_crash_firebase) | `FirebaseCrashReporter` — the Crashlytics implementation of `wsm_crash`'s interface, split out so apps without a Firebase project skip the pods. |
 | [`wsm_crash`](packages/wsm_crash) | `CrashReportingInterface`/`CrashReportingService`, Firebase Crashlytics and local-logging implementations, `CrashReportingInterceptor`, `AppBlocObserver`, `runGuardedApp` bootstrap helper. |
 
-Packages are intentionally independent siblings (no cross-dependencies),
-mirroring the drift_sync repo layout. Wire them together in the app's
+Packages are intentionally independent siblings, mirroring the drift_sync repo
+layout. The one dependency between them is `wsm_crash_firebase` → `wsm_crash`,
+which an implementation package necessarily has on its interface. Wire them together in the app's
 composition root — see each package README.
 
 ## Consuming a package
@@ -67,6 +69,7 @@ flutter analyze
 (cd packages/wsm_core && dart test)
 (cd packages/wsm_network && flutter test)
 (cd packages/wsm_crash && flutter test)
+(cd packages/wsm_crash_firebase && flutter test)
 ```
 
 ## Releasing

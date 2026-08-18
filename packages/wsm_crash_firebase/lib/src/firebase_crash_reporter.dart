@@ -2,12 +2,22 @@ import 'package:dio/dio.dart';
 import 'package:firebase_crashlytics/firebase_crashlytics.dart';
 import 'package:meta/meta.dart';
 
-import 'crash_reporting_interface.dart';
+import 'package:wsm_crash/wsm_crash.dart';
 
 /// Firebase Crashlytics implementation of [CrashReportingInterface].
 ///
 /// Requires `Firebase.initializeApp()` to have completed first — do that in
-/// the `beforeRun` callback of `runGuardedApp`.
+/// the `beforeRun` callback of `runGuardedApp`:
+///
+/// ```dart
+/// runGuardedApp(
+///   builder: () => const App(),
+///   reporter: FirebaseCrashReporter(),
+///   beforeRun: () => Firebase.initializeApp(
+///     options: DefaultFirebaseOptions.currentPlatform,
+///   ),
+/// );
+/// ```
 class FirebaseCrashReporter implements CrashReportingInterface {
   FirebaseCrashReporter({FirebaseCrashlytics? crashlytics})
       : _crashlytics = crashlytics ?? FirebaseCrashlytics.instance;

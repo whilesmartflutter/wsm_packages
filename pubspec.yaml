@@ -8,3 +8,4 @@ workspace:
   - packages/wsm_core
   - packages/wsm_network
   - packages/wsm_crash
+  - packages/wsm_crash_firebase
