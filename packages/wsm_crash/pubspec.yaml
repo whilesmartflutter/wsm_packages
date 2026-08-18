@@ -1,0 +1,27 @@
+name: wsm_crash
+description: WhileSmart mobile shared crash reporting — provider-agnostic interface, Firebase Crashlytics implementation, guarded bootstrap, Dio interceptor and Bloc observer.
+version: 0.1.0
+homepage: https://github.com/whilesmartflutter/wsm_packages
+repository: https://github.com/whilesmartflutter/wsm_packages
+issue_tracker: https://github.com/whilesmartflutter/wsm_packages/issues
+publish_to: none
+
+resolution: workspace
+
+environment:
+  sdk: ^3.6.0
+  flutter: ">=3.16.0"
+
+dependencies:
+  bloc: ^9.0.0
+  dio: ^5.8.0
+  firebase_crashlytics: ^5.0.0
+  flutter:
+    sdk: flutter
+  logger: ^2.5.0
+  meta: ^1.15.0
+
+dev_dependencies:
+  flutter_test:
+    sdk: flutter
+  lints: ^4.0.0
