@@ -1,6 +1,6 @@
 name: wsm_crash_firebase
 description: Firebase Crashlytics implementation of wsm_crash's CrashReportingInterface.
-version: 0.1.0
+version: 0.1.1
 homepage: https://github.com/whilesmartflutter/wsm_packages
 repository: https://github.com/whilesmartflutter/wsm_packages
 issue_tracker: https://github.com/whilesmartflutter/wsm_packages/issues
@@ -14,7 +14,11 @@ environment:
 
 dependencies:
   dio: ^5.8.0
-  firebase_crashlytics: ^5.0.0
+  # Widened for apps still on Crashlytics 4.x — the API this package uses
+  # (recordError, setCustomKey, setUserIdentifier, log,
+  # setCrashlyticsCollectionEnabled, sendUnsentReports) is unchanged across
+  # 4.x and 5.x.
+  firebase_crashlytics: ">=4.0.0 <6.0.0"
   flutter:
     sdk: flutter
   meta: ^1.15.0
