@@ -1,0 +1,24 @@
+name: wsm_bloc
+description: WhileSmart mobile shared Bloc glue — router bridge and a Cubit base class with guarded emits.
+version: 0.1.0
+homepage: https://github.com/whilesmartflutter/wsm_packages
+repository: https://github.com/whilesmartflutter/wsm_packages
+issue_tracker: https://github.com/whilesmartflutter/wsm_packages/issues
+publish_to: none
+
+resolution: workspace
+
+environment:
+  sdk: ^3.6.0
+  flutter: ">=3.16.0"
+
+dependencies:
+  bloc: ^9.0.0
+  flutter:
+    sdk: flutter
+  meta: ^1.15.0
+
+dev_dependencies:
+  flutter_test:
+    sdk: flutter
+  lints: ^4.0.0

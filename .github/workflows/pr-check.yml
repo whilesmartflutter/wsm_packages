@@ -31,6 +31,10 @@ jobs:
         working-directory: packages/wsm_core
         run: dart test
 
+      - name: Test wsm_bloc
+        working-directory: packages/wsm_bloc
+        run: flutter test
+
       - name: Test wsm_network
         working-directory: packages/wsm_network
         run: flutter test

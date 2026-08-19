@@ -14,6 +14,7 @@ keep descriptive unprefixed names.
 |---|---|
 | [`wsm_core`](packages/wsm_core) | `Failure` model, `ApiException` hierarchy, `ErrorHandler` / `RepositoryErrorHandler`, use-case base classes, `AsyncState<T>` / `MutationState`, logger factory. Pure Dart. |
 | [`wsm_network`](packages/wsm_network) | `createDio` factory with sane timeouts, `TokenInterceptor`, redacting `NetworkLoggerInterceptor`, `LocaleInterceptor`, `RemoveNullValuesInterceptor`, and the `TokenStorage` interface. No plugin dependencies. |
+| [`wsm_bloc`](packages/wsm_bloc) | `CubitListenable` (go_router bridge) and `SafeCubit` (emits guarded after close). |
 | [`wsm_secure_storage`](packages/wsm_secure_storage) | `SecureTokenStorage` — the keychain/keystore implementation of `TokenStorage`. |
 | [`wsm_crash_firebase`](packages/wsm_crash_firebase) | `FirebaseCrashReporter` — the Crashlytics implementation of `wsm_crash`'s interface, split out so apps without a Firebase project skip the pods. |
 | [`wsm_crash`](packages/wsm_crash) | `CrashReportingInterface`/`CrashReportingService`, Firebase Crashlytics and local-logging implementations, `CrashReportingInterceptor`, `AppBlocObserver`, `runGuardedApp` bootstrap helper. |
@@ -90,6 +91,7 @@ flutter analyze
 (cd packages/wsm_network && flutter test)
 (cd packages/wsm_crash && flutter test)
 (cd packages/wsm_crash_firebase && flutter test)
+(cd packages/wsm_bloc && flutter test)
 (cd packages/wsm_secure_storage && flutter test)
 ```
 
