@@ -1,3 +1,7 @@
+## 0.2.1
+
+- Refresh expired access tokens and retry the failed request once.
+
 ## 0.2.0
 
 **Breaking:** `SecureTokenStorage` moved to the new `wsm_secure_storage`
