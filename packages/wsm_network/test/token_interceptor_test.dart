@@ -7,10 +7,13 @@ import 'package:wsm_network/wsm_network.dart';
 /// Returns a fixed status for every request, so interceptor behaviour can be
 /// exercised end-to-end through a real [Dio] without a network.
 class _StubAdapter implements HttpClientAdapter {
-  _StubAdapter(this.statusCode);
+  _StubAdapter(int statusCode) : statusCodes = <int>[statusCode];
 
-  final int statusCode;
+  _StubAdapter.sequence(this.statusCodes);
+
+  final List<int> statusCodes;
   RequestOptions? lastRequest;
+  int requests = 0;
 
   @override
   Future<ResponseBody> fetch(
@@ -19,6 +22,8 @@ class _StubAdapter implements HttpClientAdapter {
     Future<void>? cancelFuture,
   ) async {
     lastRequest = options;
+    final statusCode = statusCodes[requests.clamp(0, statusCodes.length - 1)];
+    requests++;
     return ResponseBody.fromString(
       '{}',
       statusCode,
@@ -82,8 +87,9 @@ void main() {
 
       await client.dio.get<void>(
         '/me',
-        options:
-            Options(headers: <String, dynamic>{'Authorization': 'Basic z'}),
+        options: Options(
+          headers: <String, dynamic>{'Authorization': 'Basic z'},
+        ),
       );
 
       expect(client.adapter.lastRequest!.headers['Authorization'], 'Basic z');
@@ -91,6 +97,82 @@ void main() {
   });
 
   group('TokenInterceptor.onError', () {
+    test('refreshes the token and retries the request once', () async {
+      var token = 'expired';
+      final adapter = _StubAdapter.sequence(<int>[401, 200]);
+      final dio = createDio(baseUrl: 'https://api.test')
+        ..httpClientAdapter = adapter;
+      dio.interceptors.add(
+        TokenInterceptor(
+          getToken: () => token,
+          refreshToken: () async {
+            token = 'renewed';
+            return token;
+          },
+          retryClient: dio,
+        ),
+      );
+
+      final response = await dio.get<void>('/transactions');
+
+      expect(response.statusCode, 200);
+      expect(adapter.requests, 2);
+      expect(adapter.lastRequest!.headers['Authorization'], 'Bearer renewed');
+    });
+
+    test('signs out when refreshing fails', () async {
+      var signedOut = false;
+      late Dio dio;
+      final adapter = _StubAdapter(401);
+      dio = createDio(
+        baseUrl: 'https://api.test',
+        interceptors: <Interceptor>[
+          TokenInterceptor(
+            getToken: () => 'expired',
+            refreshToken: () async => null,
+            retryClient: Dio(BaseOptions(baseUrl: 'https://api.test'))
+              ..httpClientAdapter = adapter,
+            onUnauthorized: () => signedOut = true,
+          ),
+        ],
+      )..httpClientAdapter = adapter;
+
+      await expectLater(
+        dio.get<void>('/transactions'),
+        throwsA(isA<DioException>()),
+      );
+
+      expect(signedOut, isTrue);
+      expect(adapter.requests, 1);
+    });
+
+    test('signs out once when the retried request is unauthorized', () async {
+      var signedOut = 0;
+      var token = 'expired';
+      final adapter = _StubAdapter.sequence(<int>[401, 401]);
+      final dio = createDio(baseUrl: 'https://api.test')
+        ..httpClientAdapter = adapter;
+      dio.interceptors.add(
+        TokenInterceptor(
+          getToken: () => token,
+          refreshToken: () async {
+            token = 'renewed';
+            return token;
+          },
+          retryClient: dio,
+          onUnauthorized: () => signedOut++,
+        ),
+      );
+
+      await expectLater(
+        dio.get<void>('/transactions'),
+        throwsA(isA<DioException>()),
+      );
+
+      expect(signedOut, 1);
+      expect(adapter.requests, 2);
+    });
+
     test('signs out on a 401 for an authenticated request', () async {
       var signedOut = false;
       final client = _client(
