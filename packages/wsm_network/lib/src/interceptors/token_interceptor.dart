@@ -114,7 +114,7 @@ class TokenInterceptor extends Interceptor {
       request
         ..headers[headerName] = '$scheme $token'
         ..extra[_retriedKey] = true;
-      return retryClient!.fetch<dynamic>(request);
+      return await retryClient!.fetch<dynamic>(request);
     } on Object {
       return null;
     }
