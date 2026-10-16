@@ -1,6 +1,6 @@
 name: wsm_core
 description: WhileSmart mobile shared core — Failure model, ApiException hierarchy, error handlers, use-case base classes, and logger factory.
-version: 0.1.0
+version: 0.1.1
 homepage: https://github.com/whilesmartflutter/wsm_packages
 repository: https://github.com/whilesmartflutter/wsm_packages
 issue_tracker: https://github.com/whilesmartflutter/wsm_packages/issues

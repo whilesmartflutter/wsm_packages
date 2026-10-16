@@ -1,5 +1,10 @@
 # Changelog
 
+## 0.1.1
+
+- `ErrorHandler` reads the message from `error` when the body has no
+  `message` (Desk's API), and skips non-string values instead of throwing.
+
 ## 0.1.0
 
 - Initial release, lifted from trakli-mobile's `lib/core/error` and
