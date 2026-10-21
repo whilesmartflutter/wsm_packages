@@ -75,9 +75,7 @@ class ErrorHandler {
 
     final statusCode = err.response?.statusCode;
     final data = decodeBody(err.response?.data);
-    final message = data is Map
-        ? (data['message'] as String?) ?? 'Unknown error'
-        : 'Unknown error';
+    final message = _messageFrom(data) ?? 'Unknown error';
 
     switch (statusCode) {
       case 400:
@@ -147,6 +145,16 @@ class ErrorHandler {
     } catch (_) {
       return null;
     }
+  }
+
+  // Laravel APIs send `message`; Desk's API sends `error`.
+  static String? _messageFrom(dynamic data) {
+    if (data is! Map) return null;
+    for (final key in const ['message', 'error']) {
+      final value = data[key];
+      if (value is String && value.trim().isNotEmpty) return value;
+    }
+    return null;
   }
 
   static void _reportApiError(DioException err) {

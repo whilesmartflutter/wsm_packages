@@ -85,6 +85,62 @@ void main() {
       expect(ex, isA<NotFoundException>());
       expect(ex.message, 'Not found');
     });
+
+    group('server message', () {
+      test('is read from `error` when the body has no `message`', () {
+        final ex = ErrorHandler.handleDioException(
+          _dioError(
+            status: 422,
+            body: {
+              'code': 'mailbox_required',
+              'error': 'A sending mailbox is required.',
+              'setup_required': true,
+            },
+          ),
+        );
+        expect(ex, isA<ValidationException>());
+        expect(ex.message, 'A sending mailbox is required.');
+      });
+
+      test('prefers `message` when both are present', () {
+        final ex = ErrorHandler.handleDioException(
+          _dioError(
+            status: 400,
+            body: {'message': 'From message', 'error': 'From error'},
+          ),
+        );
+        expect(ex.message, 'From message');
+      });
+
+      test('skips a `message` that is not text', () {
+        final ex = ErrorHandler.handleDioException(
+          _dioError(
+            status: 409,
+            body: {
+              'message': {'nested': true},
+              'error': 'Already taken',
+            },
+          ),
+        );
+        expect(ex, isA<DuplicateException>());
+        expect(ex.message, 'Already taken');
+      });
+
+      test('falls back when neither is usable', () {
+        for (final body in [
+          {'error': ''},
+          {'error': 42},
+          {'errors': <String, dynamic>{}},
+          'not a map',
+          null,
+        ]) {
+          final ex = ErrorHandler.handleDioException(
+            _dioError(status: 400, body: body),
+          );
+          expect(ex.message, 'Unknown error', reason: 'body: $body');
+        }
+      });
+    });
   });
 
   group('handleApiCall', () {
